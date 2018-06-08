@@ -328,6 +328,8 @@ Qe7# 0-1
   }
 }
 
+#define GAMES_PER_CHUNK 1
+
 void generate_supervised_data(const std::string& filename) {
   namespace fs = boost::filesystem;
   fs::path fp(filename);
@@ -336,7 +338,7 @@ void generate_supervised_data(const std::string& filename) {
     fs::create_directories(dir);
     myprintf_so("Created dirs %s\n", dir.string().c_str());
   }
-  auto chunker = OutputChunker{dir.string() + "/training", true, 15000};
+  auto chunker = OutputChunker{dir.string() + "/training", true, GAMES_PER_CHUNK};
 
   std::ifstream f;
   f.open(filename);
@@ -358,7 +360,7 @@ void generate_supervised_data(const std::string& filename) {
       Training::record(bh, move);
       bh.do_move(move);
     }
-    Training::dump_training(game->result, chunker);
+    Training::dump_training_v2(game->result, chunker);
   }
 }
 
