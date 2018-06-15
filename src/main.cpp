@@ -40,6 +40,8 @@
 
 using namespace Utils;
 
+constexpr int GAMES_PER_CHUNK = 1;
+
 static void license_blurb() {
     myprintf_so(
         "LCZero %s Copyright (C) 2017-2018  Gary Linscott and contributors\n"
@@ -328,7 +330,6 @@ Qe7# 0-1
   }
 }
 
-#define GAMES_PER_CHUNK 1
 
 void generate_supervised_data(const std::string& filename) {
   namespace fs = boost::filesystem;
