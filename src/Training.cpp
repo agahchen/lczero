@@ -112,7 +112,7 @@ void Training::record(const BoardHistory& state, Move move) {
     // Because now Network parses the file and stores m_format_version.
     // Probably we will need a setter function
     // e.g. Network::set_format_version(2)
-    // throw std::runtime_error("Need to update SL flow");
+
     step.probabilities.resize(Network::get_num_output_policy());
     step.probabilities[Network::lookup(move, state.cur().side_to_move())] = 1.0;
     m_data.emplace_back(step);
