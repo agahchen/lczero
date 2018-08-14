@@ -19,14 +19,20 @@ boost::optional<int> parse_result(const std::string& result) {
 }
 
 std::unique_ptr<PGNGame> PGNParser::parse() {
-  // Skip all the PGN headers
+  // Skip all the PGN headers except Result and FEN
   std::string s;
   std::string result;
+  std::string fen;
+
   const std::string kResultToken = "[Result \"";
+  const std::string kFENToken = "[FEN \"";
   for (;;) {
     getline(is_, s);
     if (s.substr(0, kResultToken.size()) == kResultToken) {
-      result = s.substr(kResultToken.size(), s.size() - kResultToken.size() - 2);
+        result = s.substr(kResultToken.size(), s.size() - kResultToken.size() - 2);
+    } else if (s.substr(0, kFENToken.size()) == kFENToken) {
+        fen = s.substr(kFENToken.size(), s.size() - kFENToken.size() - 2);
+        fprintf(stderr, "Found fen %s\n", fen.c_str());
     }
     if (s.empty()) {
       break;
@@ -38,7 +44,13 @@ std::unique_ptr<PGNGame> PGNParser::parse() {
   }
 
   std::unique_ptr<PGNGame> game(new PGNGame);
-  game->bh.set(Position::StartFEN);
+  if (fen.empty()) {
+    fprintf(stderr, "No fen\n");
+    game->bh.set(Position::StartFEN);
+  } else {
+    game->bh.set(fen);
+  }
+
 
   auto game_result = parse_result(result);
   if (game_result) {

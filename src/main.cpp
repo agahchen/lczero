@@ -40,6 +40,8 @@
 
 using namespace Utils;
 
+constexpr int GAMES_PER_CHUNK = 1;
+
 static void license_blurb() {
     myprintf_so(
         "LCZero %s Copyright (C) 2017-2018  Gary Linscott and contributors\n"
@@ -328,6 +330,7 @@ Qe7# 0-1
   }
 }
 
+
 void generate_supervised_data(const std::string& filename) {
   namespace fs = boost::filesystem;
   fs::path fp(filename);
@@ -336,7 +339,7 @@ void generate_supervised_data(const std::string& filename) {
     fs::create_directories(dir);
     myprintf_so("Created dirs %s\n", dir.string().c_str());
   }
-  auto chunker = OutputChunker{dir.string() + "/training", true, 15000};
+  auto chunker = OutputChunker{dir.string() + "/training", true, GAMES_PER_CHUNK};
 
   std::ifstream f;
   f.open(filename);
@@ -352,13 +355,14 @@ void generate_supervised_data(const std::string& filename) {
     }
     myprintf_so("\rProcessed %d games", ++games);
     BoardHistory bh;
-    bh.set(Position::StartFEN);
+    // set it to the bh fen
+    bh.set(game->bh.positions.front().fen().c_str());
     for (int i = 0; i < static_cast<int>(game->bh.positions.size()) - 1; ++i) {
       Move move = game->bh.positions[i + 1].get_move();
       Training::record(bh, move);
       bh.do_move(move);
     }
-    Training::dump_training(game->result, chunker);
+    Training::dump_training_v2(game->result, chunker);
   }
 }
 

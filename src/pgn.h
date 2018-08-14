@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Position.h"
+#include "stdio.h"
 
 struct PGNGame {
   BoardHistory bh;
